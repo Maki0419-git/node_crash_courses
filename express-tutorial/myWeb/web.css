@@ -1,0 +1,71 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+html,body{
+    height: 100vh;
+    width: 100vw;
+    font-family: '微軟正黑體';
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container{
+    width: 80%;
+    
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    grid-auto-rows: 150px;
+    grid-gap: 1em;
+}
+.box{
+    border: 1px solid black
+}
+.box{cursor:pointer;}
+
+.box:hover .filter{display:flex;}
+.box1{
+    background-image: url(https://cdn.hk01.com/di/media/images/1589541/org/19a26184b5714050c88534a48516507f.jpg/0qqXgL9g6tpfMwoD-cnnwdozPNdekv5KOsUT5TrFE-U);
+    background-size: cover;
+}
+.box2{
+    background-image:url(lisa-1.jpg);
+    background-size:cover;
+}
+
+.box3{
+    background-image:url(lisa-2.jpg);
+    background-size:cover;
+}
+
+.box4{
+    background-image:url(lisa-3.jpg);
+    background-size:cover;
+}
+.filter{
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    
+}
+.filter p{
+    color: white;
+    border: 1px solid white;
+    padding: 10px;
+    transition: all 0.4s ease-in;
+}
+
+.filter p:hover{background-color: white;
+color: black}
+
+@media screen and (max-width:800px){html,body{align-items:flex-start;} .container{grid-template-columns: repeat(2,1fr); margin: 50px 0;}}
+
+.filter p:hover{background-color: white;
+color: black}
+
+@media screen and (max-width:600px){html,body{align-items:flex-start;} .container{grid-template-columns: 1fr; margin: 50px 0;}}
