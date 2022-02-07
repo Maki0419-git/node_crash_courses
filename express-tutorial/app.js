@@ -1,30 +1,66 @@
 const express = require('express');
-const path = require('path');
-const app = express();//create server instance
+const app = express();
+const { products } = require('./data');
 
-
-//save static resource
-//setup static and middleware
-//static asset is an asset that server dont need to change it ex:css/image/js
-//express will set up its mimetype/status code
-app.use(express.static('./public'))
-
+//docu:https://expressjs.com/zh-tw/4x/api.html
 
 app.get('/', (req, res) => {
-    // res.status(200).send('Home page')
-    res.sendFile(path.resolve(__dirname, './myWeb/index.html'))
+    //Sends a JSON response. This method sends a response
+    // (with the correct content-type) that is the parameter converted to 
+    //a JSON string using JSON.stringify().
+    //res.json(products)
+    res.send('<h1>Homepage</h1><a href="/api/products">products</a>')
 })
 
-app.get('/about', (req, res) => {
-    res.status(200).send('About page')
+app.get('/api/products/', (req, res) => {
+    //minimal response
+    res.json(products.map(i => i.desc));
 })
 
-//handle all http calls
-app.all('*', (req, res) => {
-    res.status(404).send('<h1>resource not found</h1>')
+//with parameter-1
+app.get('/api/products/1', (req, res) => {
+    const singleProduct = products.find(product => product.id === 1)
+    res.json(singleProduct);
 })
 
+//with parameter-2
+app.get('/api/products/:id', (req, res) => {
+    console.log(req.params); //{ id: '2' }
+    const singleProduct = products.find(product => product.id === Number(req.params.id))
+    if (!singleProduct) {
+        //error handle
+        res.status(404).send('no product found');
+    } else {
+        res.json(singleProduct);
+    }
+}
+)
+//complex
+app.get('/api/products/:id/reviews/:reviewID', (req, res) => {
+    console.log(req.params); //{ id: '3', reviewID: 'abc' }
+    res.send('hello')
+})
 
-app.listen(3000, () => console.log('listening on 3000...'))
-//app.get
-//app.post
+//with query
+app.get('/api/v1/query', (req, res) => {
+    const { search, limit } = req.query;
+    let sortedProducts = [...products];
+    console.log(req.query);//{ search: 'melody', limit: '6' }
+    if (search) {
+        sortedProducts = sortedProducts.filter(product => {
+            return product.name.startsWith(search)
+        })
+    }
+
+    if (limit) {
+        sortedProducts = sortedProducts.slice(0, Number(limit))
+    }
+    res.status(200).json(sortedProducts);
+
+
+})
+
+app.listen(3000, () => {
+    console.log('listening on 3000...')
+})
+
