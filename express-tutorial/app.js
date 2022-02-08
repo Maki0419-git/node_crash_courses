@@ -1,66 +1,110 @@
 const express = require('express');
 const app = express();
-const { products } = require('./data');
+const { logger, authorize } = require('./middlefunc');
 
-//docu:https://expressjs.com/zh-tw/4x/api.html
+//req => middleware => res
+
+//ver1.0
+// app.get('/', logger, (req, res) => {
+//     // const method = req.method;
+//     // const url = req.url;
+//     // const time = new Date().getFullYear();
+//     // console.log(method, url, time);
+//     res.send('home')
+// })
+
+
+// app.get('/about', logger, (req, res) => {
+//     res.send('about page')
+// })
+
+//ver2.0 match all route
+
+// app.use(logger); // must be before the router or it will not be applied
+
+// app.get('/', (req, res) => {
+//     res.send('home')
+// })
+
+// app.get('/about', (req, res) => {
+//     res.send('about page')
+// })
+
+// app.listen(3000, () => {
+//     console.log('listening on 3000...')
+// })
+
+
+//ver3.0   match specific route
+
+// app.use('/api', logger); // will match all the route starts with api/
+
+// app.get('/', (req, res) => {
+//     res.send('home')
+// })
+
+// app.get('/about', (req, res) => {
+//     res.send('about page')
+// })
+
+// app.get('/api/products', (req, res) => {
+//     res.send('about page')
+// })
+
+// app.get('/api/users', (req, res) => {
+//     res.send('about page')
+// })
+
+// app.listen(3000, () => {
+//     console.log('listening on 3000...')
+// })
+
+
+//ver4.0   multiple middleware in order
+
+// app.use([logger, authorize]); // will match all the route starts with api/
+
+// app.get('/', (req, res) => {
+//     res.send('home')
+// })
+
+// app.get('/about', (req, res) => {
+//     res.send('about page')
+// })
+
+// app.get('/api/products', (req, res) => {
+//     res.send('about page')
+// })
+
+// app.get('/api/users', (req, res) => {
+//     res.send('about page')
+// })
+
+
+
+//ver 5.0   add info to req 
+
+app.use('/api', [logger, authorize]); // will match all the route starts with api/
 
 app.get('/', (req, res) => {
-    //Sends a JSON response. This method sends a response
-    // (with the correct content-type) that is the parameter converted to 
-    //a JSON string using JSON.stringify().
-    //res.json(products)
-    res.send('<h1>Homepage</h1><a href="/api/products">products</a>')
+    res.send('home')
 })
 
-app.get('/api/products/', (req, res) => {
-    //minimal response
-    res.json(products.map(i => i.desc));
+app.get('/about', (req, res) => {
+    res.send('about page')
 })
 
-//with parameter-1
-app.get('/api/products/1', (req, res) => {
-    const singleProduct = products.find(product => product.id === 1)
-    res.json(singleProduct);
+app.get('/api/products', (req, res) => {
+    console.log(req.user)
+    res.send(req.user)
 })
 
-//with parameter-2
-app.get('/api/products/:id', (req, res) => {
-    console.log(req.params); //{ id: '2' }
-    const singleProduct = products.find(product => product.id === Number(req.params.id))
-    if (!singleProduct) {
-        //error handle
-        res.status(404).send('no product found');
-    } else {
-        res.json(singleProduct);
-    }
-}
-)
-//complex
-app.get('/api/products/:id/reviews/:reviewID', (req, res) => {
-    console.log(req.params); //{ id: '3', reviewID: 'abc' }
-    res.send('hello')
+app.get('/api/users', (req, res) => {
+    console.log(req.user)
+    res.send(req.user)
 })
-
-//with query
-app.get('/api/v1/query', (req, res) => {
-    const { search, limit } = req.query;
-    let sortedProducts = [...products];
-    console.log(req.query);//{ search: 'melody', limit: '6' }
-    if (search) {
-        sortedProducts = sortedProducts.filter(product => {
-            return product.name.startsWith(search)
-        })
-    }
-
-    if (limit) {
-        sortedProducts = sortedProducts.slice(0, Number(limit))
-    }
-    res.status(200).json(sortedProducts);
-
-
-})
-
 app.listen(3000, () => {
     console.log('listening on 3000...')
 })
+
 
