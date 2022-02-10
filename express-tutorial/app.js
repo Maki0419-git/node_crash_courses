@@ -1,110 +1,43 @@
 const express = require('express');
 const app = express();
-const { logger, authorize } = require('./middlefunc');
+let { people } = require('./data');
 
-//req => middleware => res
+//static assetes
+app.use(express.static('./method'))
+//why body parser:https://jimmyswebnote.com/why-use-express-bodyparser/
+//This is a built-in middleware function in Express. It parses incoming requests with urlencoded payloads and is based on body-parser.
+//parse form data
+app.use(express.urlencoded({ extended: false }))
+//parse json data
+app.use(express.json())
 
-//ver1.0
-// app.get('/', logger, (req, res) => {
-//     // const method = req.method;
-//     // const url = req.url;
-//     // const time = new Date().getFullYear();
-//     // console.log(method, url, time);
-//     res.send('home')
-// })
-
-
-// app.get('/about', logger, (req, res) => {
-//     res.send('about page')
-// })
-
-//ver2.0 match all route
-
-// app.use(logger); // must be before the router or it will not be applied
-
-// app.get('/', (req, res) => {
-//     res.send('home')
-// })
-
-// app.get('/about', (req, res) => {
-//     res.send('about page')
-// })
-
-// app.listen(3000, () => {
-//     console.log('listening on 3000...')
-// })
+app.post('/login', (req, res) => {
+    console.log(req.body)
+    const { name } = req.body;
+    if (name) {
+        return res.status(200).send(`welcome ${name}`)
+    }
+    res.status(401).send('please provide your name')
+})
 
 
-//ver3.0   match specific route
+app.get('/api/people', (req, res) => {
+    res.status(200).json({ success: true, data: people });
+})
 
-// app.use('/api', logger); // will match all the route starts with api/
-
-// app.get('/', (req, res) => {
-//     res.send('home')
-// })
-
-// app.get('/about', (req, res) => {
-//     res.send('about page')
-// })
-
-// app.get('/api/products', (req, res) => {
-//     res.send('about page')
-// })
-
-// app.get('/api/users', (req, res) => {
-//     res.send('about page')
-// })
-
-// app.listen(3000, () => {
-//     console.log('listening on 3000...')
-// })
-
-
-//ver4.0   multiple middleware in order
-
-// app.use([logger, authorize]); // will match all the route starts with api/
-
-// app.get('/', (req, res) => {
-//     res.send('home')
-// })
-
-// app.get('/about', (req, res) => {
-//     res.send('about page')
-// })
-
-// app.get('/api/products', (req, res) => {
-//     res.send('about page')
-// })
-
-// app.get('/api/users', (req, res) => {
-//     res.send('about page')
-// })
-
-
-
-//ver 5.0   add info to req 
-
-app.use('/api', [logger, authorize]); // will match all the route starts with api/
-
-app.get('/', (req, res) => {
-    res.send('home')
+app.post('/api/people', (req, res) => {
+    const { name } = req.body;
+    if (!name) {
+        return res.status(400).json({ success: false, msg: 'please provide name value' })
+    }
+    res.status(201).json({ success: true, person: name })
 })
 
 app.get('/about', (req, res) => {
     res.send('about page')
 })
 
-app.get('/api/products', (req, res) => {
-    console.log(req.user)
-    res.send(req.user)
-})
-
-app.get('/api/users', (req, res) => {
-    console.log(req.user)
-    res.send(req.user)
-})
 app.listen(3000, () => {
     console.log('listening on 3000...')
 })
-
 
