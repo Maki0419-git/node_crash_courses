@@ -11,7 +11,7 @@ const start = (async () => {
         await connectDB(process.env.MONGO_URI);
         app.use(express.json());
         app.use('/api/v1/tasks', tasks);
-        app.listen(port, console.log(`server is listening on ${port}`));
+        app.listen(port, console.log(`server is listen on ${port}`));
     } catch (e) {
         console.log(e)
     }
