@@ -1,0 +1,14 @@
+
+html,body{
+    height: 100vh;
+    width: 100vw;
+    font-family: '微軟正黑體';
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.container{
+    display:flex;
+    justify-content:flex-end;
+}
