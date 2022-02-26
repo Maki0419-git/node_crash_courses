@@ -34,48 +34,123 @@
     </form>
     <!-- <div class="alert alert-danger" id="alert" role="alert"></div> -->
 
-    <div class="mb-3 row col-sm-10" id="token">
-        <label for="exampleFormControlTextarea1" class="form-label">your token : </label>
+    <div class="mb-3 row col-sm-10" id="dataForm">
+        <label for="exampleFormControlTextarea1" class="form-label">your data : </label>
         <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
     </div>
 
-
+    <button type="submit" class="btn btn-primary " id="get-data-btn">get Data</button>
 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
         integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
         crossorigin="anonymous"></script>
 
+    <!-- login -->
     <script>
-        const result = document.getElementById('exampleFormControlTextarea1');
+
         // submit form
         const btn = document.getElementById('submit-btn')
         const username_input = document.getElementById('form-username')
         const password_input = document.getElementById('form-password')
         const form = document.getElementById('submit-form')
-        const token = document.getElementById('token')
+        const dataForm = document.getElementById('dataForm')
         btn.addEventListener('click', async (e) => {
             e.preventDefault()
             const username = username_input.value;
             const password = password_input.value;
             try {
                 const { data } = await axios.post('/api/v1/login', { username, password });
-                // const h5 = document.createElement('h5')
-                result.textContent = data.token;
-                // result.appendChild(h5)
+                localStorage.setItem('token', data.token);
+                let success_div = document.createElement('div');
+                success_div.className = 'alert alert-success mb-3 row col-sm-10 space-around';
+                let msg = document.createElement('h5');
+                msg.className = 'col-sm-3';
+                msg.textContent = "成功取得token";
+                success_div.appendChild(msg);
+                var parentDiv = dataForm.parentNode;
+                parentDiv.insertBefore(success_div, dataForm);
             } catch (error) {
                 // console.log(error.response)
                 console.log(error.response.data.msg)
                 let alert_div = document.createElement('div');
-                alert_div.className = 'alert alert-danger mb-3 row col-sm-10';
-                console.log(alert_div)
+                alert_div.className = 'alert alert-danger mb-3 row col-sm-10 ';
                 alert_div.textContent = error.response.data.msg
-                var parentDiv = token.parentNode;
-                parentDiv.insertBefore(alert_div, token);
+                var parentDiv = dataForm.parentNode;
+                parentDiv.insertBefore(alert_div, dataForm);
+                setTimeout(() => alert_div.remove(), 5000);
 
             }
 
         })
+    </script>
+    <!-- getresource -->
+    <script>
+
+        const getDataBtn = document.getElementById('get-data-btn')
+        getDataBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const result = document.getElementById('exampleFormControlTextarea1');
+            const dataForm = document.getElementById('dataForm')
+            const token = localStorage.getItem('token');
+            try {
+                const { data } = await axios.get('/api/v1/dashboard', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                result.textContent = data.msg + " " + data.secret;
+                localStorage.removeItem('token')
+            } catch (e) {
+                console.log(e.response)
+                let alert_div = document.createElement('div');
+                alert_div.className = 'alert alert-danger mb-3 row col-sm-10 space-around';
+                let msg = document.createElement('h5');
+                msg.className = 'col-sm-10';
+                msg.textContent = e.response.data.msg;
+                alert_div.appendChild(msg);
+                var parentDiv = dataForm.parentNode;
+                parentDiv.insertBefore(alert_div, dataForm);
+                setTimeout(() => alert_div.remove(), 5000);
+            }
+
+            // const res = await fetch("/api/v1/dashboard", {
+            //     headers: {
+            //         "Authorization": `Bearer ${token}`,
+            //     },
+            //     method: 'POST',
+            // }).then(response => response.json())
+            //     .then(data => {
+            //         result.textContent = data.secret;
+            //         localStorage.removeItem('token')
+            //     })
+            //     .catch(error => {
+            //         console.error(error);
+            //         let alert_div = document.createElement('div');
+            //         alert_div.className = 'alert alert-danger mb-3 row col-sm-10 space-around';
+            //         let msg = document.createElement('h3');
+            //         msg.className = 'col-sm-3';
+            //         msg.textContent = error.msg;
+            //         alert_div.appendChild(msg);
+            //         var parentDiv = dataForm.parentNode;
+            //         parentDiv.insertBefore(alert_div, dataForm);
+            //     })
+            // result.textContent = data.secret;
+            // localStorage.removeItem('token')
+
+            // console.error(error);
+            // let alert_div = document.createElement('div');
+            // alert_div.className = 'alert alert-danger mb-3 row col-sm-10 space-around';
+            // let msg = document.createElement('h3');
+            // msg.className = 'col-sm-3';
+            // msg.textContent = error.msg;
+            // alert_div.appendChild(msg);
+            // var parentDiv = dataForm.parentNode;
+            // parentDiv.insertBefore(alert_div, dataForm);
+
+        })
+
     </script>
 
 

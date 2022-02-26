@@ -16,13 +16,13 @@
 
 // doc: https://jwt.io/
 const jwt = require('jsonwebtoken');
-const { createCustomError, CustomAPIError } = require('../errors/custom-errors');
+const { BadRequestError } = require('../errors');
 
 const login = async (req, res, next) => {
     const { username, password } = req.body;
     console.log(username, password);
     if (!username || !password) {
-        throw new CustomAPIError('please provide email and password', 400)
+        throw new BadRequestError('please provide email and password')
         //return next(createCustomError('please provide email and password', 400));
     }
     const id = new Date().getDate();
@@ -31,8 +31,9 @@ const login = async (req, res, next) => {
     res.status(200).json({ msg: 'user created', token });
 }
 const dashboard = async (req, res) => {
+    const { username, id } = req.user;
     const luckynumber = Math.floor(Math.random() * 100);
-    res.status(200).json({ msg: `hello yoshino`, secret: `here is your data : ${luckynumber}` })
+    res.status(200).json({ msg: `hello ${username} `, secret: `here is your id : ${id}` })
 }
 
 module.exports = { login, dashboard }
