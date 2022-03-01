@@ -12,6 +12,8 @@ const jobsRouter = require('./routes/jobs')
 
 //DB
 const connectDB = require('./db/connect');
+//authenticateUser
+const authenticateUser = require('./middleware/auth');
 
 //middleware
 const notFoundMiddleware = require('./middleware/not-found');
@@ -21,7 +23,7 @@ const errorHandlerMiddleWare = require('./middleware/err');
 app.use(express.static('./public'));
 app.use(express.json());
 app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/jobs', jobsRouter);
+app.use('/api/v1/jobs', authenticateUser, jobsRouter);
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleWare);
 

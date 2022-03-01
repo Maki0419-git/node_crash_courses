@@ -3,23 +3,20 @@ const { UnauthenticatedError } = require('../errors');
 
 
 const authenticationMiddleware = async (req, res, next) => {
-    console.log(req.headers.authorization);
+    //check header
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ') || authHeader.split(' ')[1] == "null") {
-        throw new UnauthenticatedError('No token provided');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        throw new UnauthenticatedError('Authentication invalid');
     }
     const token = authHeader.split(' ')[1];
-    //verify the token
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log(decoded);
-        const { id, username } = decoded
-        req.user = { id, username }
-        next();
+        const payload = jwt.verify(token, process.env.JWT_SECRET)
+        //attach the user to the job routers
+        req.user = { userID: payload.userID, name: payload.name }
+        next()
     } catch (err) {
-        throw new UnauthenticatedError('Not authorized to access this route');
+        throw new UnauthenticatedError('Authentication invalid')
     }
-
 }
 
 module.exports = authenticationMiddleware;
